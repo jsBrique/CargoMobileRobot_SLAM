@@ -1,0 +1,124 @@
+
+.github-buttons {
+    margin: 15px 0;
+}
+
+.github-buttons img {
+    display: block;
+    float: left;
+    margin: 0 10px 10px 0;
+}
+
+.proportion {
+    position: relative;
+}
+
+.proportion .filler {
+    width: 80%;
+    padding-top: 100%;
+}
+
+
+.mag-eg-row {
+    margin-bottom: 15px;
+}
+.mag-eg-el-wrap {
+  margin-bottom: 15px;
+  width: 600px;
+  height: 600px;
+}
+.mag-eg-doc {
+    margin: 20px;
+}
+
+.outer-wrap {
+    position: relative;
+    float: left;
+}
+
+/* [mag-zoom="outer"] {
+    position: absolute;
+    z-index: 10;
+    left: 100%;
+} */
+
+
+
+[mag-thumb="inner-inline"] {
+    float: left;
+}
+
+
+.mag-eg-hud {
+    position: absolute;
+    z-index: 10;
+    text-align: right;
+    padding: 0.5em;
+    color: white;
+    background: black;
+    background: rgba(0,0,0,0.5);
+}
+
+.mag-eg-hud-left {
+    left: 0;
+    bottom: 0;
+    text-align: left;
+}
+
+.mag-eg-hud-right {
+    right: 0;
+    bottom: 0;
+    text-align: right;
+}
+
+.cBTN {
+	margin: 10px;
+	background-color: rgb(124, 124, 124); /* Green */
+	border: none;
+	color: white;
+	padding: 15px 30px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 16px;
+}
+.myBTN {
+	background-color: rgb(124, 124, 124); /* Green */
+	border: none;
+	color:white;
+	padding: 15px 30px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 16px;
+}
+#copyright {
+	left: 0px;
+	height: 35px;
+	line-height: 35px;
+	position: fixed;
+	bottom: 0;
+	width: 100%;
+	text-align: center;
+	background: #333;
+	color: #fff;
+	font-family: Arial;
+	font-size: 12px;
+	letter-spacing: 1px;
+}
+
+input[type='checkbox']{
+    position: relative;
+    left:10px;
+    width: 20px;
+    height: 20px;
+}
+.checkBox{
+    position: relative;
+    left: 15px;
+    top: -0.2em;
+    color: rgb(109, 107, 107);
+	font-family:"微软雅黑";
+	font-size: 18px;
+}
+

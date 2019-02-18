@@ -1,0 +1,181 @@
+<!doctype html>
+<html>
+<head>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/core.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0, user-scalable=no"/>
+<title>B-Robot Control</title>
+	
+</head>
+
+<body text-align:center style="background: #6B6A6A">
+	
+<style>
+	* {
+    -webkit-touch-callout:none;  /*系统默认菜单被禁用*/
+  -webkit-user-select:none; /*webkit浏览器*/
+  -khtml-user-select:none; /*早期浏览器*/
+  -moz-user-select:none; /*火狐*/
+  -ms-user-select:none;  /*IE10*/
+  user-select:none;
+
+ }
+
+	
+@media screen and (min-width: 800px) {/*苹果端*/
+/*此条件表示最大宽度为1000，也就是如果宽度小于1000则执行以下CSS代码*/ 
+	.imgmap{
+		width: 800px;
+		height: auto;
+		display:inline-block;
+	}
+.control
+	{	height: 25%;
+		width: 40%;
+		top:calc(-10vh);
+		margin-left:10px;
+		position: relative;
+		display:inline-block;
+	}
+	.X{display:inline;}
+			.sc{
+
+background-size:contain|cover;
+min-width: 345px;
+width:800px;
+
+height: auto;
+
+display:inline;
+}
+.cBTN {
+	background-color: rgb(124, 124, 124); /* Green */
+	border: none;
+	color:white;
+	padding: 10% 11%;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 16px;
+	margin: 10px;
+	font-family: "微软雅黑";
+		
+}
+	.head{
+			font-family: "微软雅黑";
+			color:#C8C8C8;
+			
+		}
+}
+
+	/*手机端*/
+@media screen and (max-width: 800px) {
+
+	
+	.sc{
+margin: 0px auto;
+		text-align: center;
+/*background-size:contain|cover;*/
+min-width: 345px;
+width:100%;
+height: auto;
+
+
+
+}
+/*此条件表示最大宽度为1000，也就是如果宽度小于1000则执行以下CSS代码*/
+/*	.X{ text-align: center;position: relative;margin:0px auto}*/
+.control{text-align: center;margin：auto;margin:0px auto;}
+.cBTN {
+	background-color: rgb(124, 124, 124); /* Green */
+	border: none;
+	color:white;
+	padding: 7% 7%;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 16px;
+	margin: 10px;
+	font-family: "微软雅黑";
+		
+}
+	.head{
+			font-family: "微软雅黑";
+			color:#C8C8C8;
+			text-align: center;
+		}
+}
+	
+	</style>
+<h3 class="head">移动机器人控制平台</h3>
+<div class="imgmap">
+<img class="sc" id="map" src="{{ url_for('video_feed')}}" />
+</div>		
+<div class="control">
+	
+      <div class="cBTN" id="btn_LL" >左移</div>
+      <div class="cBTN" id="btn_F"  >前进</div>
+      <div class="cBTN" id="btn_RR" >右移</div>
+
+      <div class="cBTN" id="btn_L" >左转</div>
+      <div class="cBTN" id="btn_B" >后退</div>
+      <div class="cBTN" id="btn_R" >右转</div>
+	<br>
+	 <div class="cBTN" id="btn_V" >送阔落</div>
+
+	</div>
+	
+	<script>
+		var key_list=[['W',87,"F",0],
+                            ['S',83,"B",0],
+                            ['A',65,"L",0],
+                            ['D',68,"R",0],
+                            ['Q',81,"Q",0],
+                            ['E',69,"E",0],
+					 		['E',69,"E",0]];
+		   function dirBtnDown(direction) {
+                var url = location.protocol + '//' + document.domain + ':' + location.port
+                var request = new XMLHttpRequest();
+                
+//                if(direction=="F")	{$("#btn_F").css({'background-color':'red'});};
+//                if(direction=="B")	{$("#btn_B").css({'background-color':'red'});};
+//                if(direction=="L")	{$("#btn_LL").css({'background-color':'red'});};
+//                if(direction=="R")	{$("#btn_RR").css({'background-color':'red'});};
+//                if(direction=="Q")	{$("#btn_L").css({'background-color':'red'});};
+//                if(direction=="E")	{$("#btn_R").css({'background-color':'red'});};
+                
+                request.open("POST", url);
+                request.send(direction);
+                
+        }
+ 
+        function dirBtnUp() {
+                var url = location.protocol + '//' + document.domain + ':' + location.port
+                var request = new XMLHttpRequest();
+                //$(".cBTN").css({'background-color':'rgb(124, 124, 124)'});
+                request.open("POST", url);
+                request.send("S");
+        }
+var cmd_list=['L','F','R','Q','B','E','V'];		
+		
+window.onload = function() {
+				var btn = document.getElementsByClassName("cBTN");
+	    		for(var i = 0; i < btn.length; i++) {    
+     			(function(i) {        
+      				btn[i].ontouchstart =function() {            
+          				this.style.backgroundColor ="red"; 
+						dirBtnDown(cmd_list[i]);
+        			};        
+        			btn[i].ontouchend =function() {            
+        	 			this.style.backgroundColor ="rgb(124, 124, 124)";
+						dirBtnUp();
+        			};    
+       			})(i);}
+};
+
+
+
+	</script>
+</body>
+	
+</html>

@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<script type="text/javascript" src="https://cdn.bootcss.com/socket.io/2.2.0/socket.io.js"></script>
+<script src="https://cdn.bootcss.com/highcharts/7.0.1/highcharts.js"></script>
+<script src="https://cdn.bootcss.com/highcharts/7.0.1/modules/exporting.js"></script>
+<script src="https://img.hcharts.cn/highcharts-plugins/highcharts-zh_CN.js"></script>
+<script src="https://cdn.bootcss.com/highcharts/7.0.1/highcharts-more.js"></script>
+<script src="http://img.hcharts.cn/highcharts/themes/dark-unica.js"></script>
+<script src="{{ url_for('static', filename='js/jquery-1.11.0.min.js')}}" type="text/javascript"></script>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1">
+<title>B-Robot Control</title>
+<!--"{{ url_for('static', filename='css/main.css')}}"-->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css')}}" />
+<link rel="stylesheet" href="{{ url_for('static', filename='src/css/mag.css')}}" />
+<link rel="stylesheet" href="{{ url_for('static', filename='src/theme/default.css')}}" />
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/zzsc-demo.css')}}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css')}}" />
+<h4 style="position:relative;left:25px;top:5px;">移动机器人控制平台</h4>
+<style type="text/css">
+.controls-btns button {
+	color: #333;
+}
+.mt50 {
+	margin-top: 50px;
+}
+input[type='checkbox']{
+    margin: 5px;
+    width: 20px;
+    height: 20px;
+}
+.checkBox{
+    position: relative;
+    left: 5px;
+    top: -0.2em;
+    color: rgb(109, 107, 107);
+	font-family:"微软雅黑";
+	font-size: 18px;
+}
+
+
+</style>
+</head><body>
+<div class="mag-eg-el-wrap img-thumbnail" style="position:relative;left:20px;top:10px;height:auto;width:auto">
+  <div style="height: 280px; width: 280px;overflow:auto;"> 
+    
+    <!-- <img src="test.jpg" style="height: 280px; width: 280px;"/> -->
+    <div id="containerX" style="height: 280px; width: 280px;"></div>
+  </div>
+</div>
+<div id="cross" style="position: absolute;left:25px;top:365px;height:auto;width:auto;z-index: 15;">
+<canvas id="myCanvas" width="280" height="280"></canvas>
+</div>
+<div class="mag-eg-el-wrap img-thumbnail" style="position: absolute;left:20px;top:360px;height:auto;width:auto">
+	
+  <div style="height: 280px; width: 280px;position:relative;top:0px;
+				background:url(https://static.oschina.net/uploads/img/201409/26073943_nCX5.gif);
+				background-position: center">
+				
+    <div mag-zoom="outer" class="mag-eg-el" style="position:relative;overflow:hidden;"> 
+
+			<img id="mapimg2" src="https://oscimg.oschina.net/oscnet/e2cef0a5d1da4b97819b7165d9638e462d2.jpg" onerror='this.src="https://oscimg.oschina.net/oscnet/e2cef0a5d1da4b97819b7165d9638e462d2.jpg"'/> </div>
+			
+	</div>
+
+</div>
+<div id="xycoordinates" style="position:absolute;top:360px;left:20px;z-index: 9;color: rgb(255, 191, 52);"></div>
+<div class="row mag-eg-row"  style="position:relative;left:330px;top:-295px;">
+	
+  <div class="col col-md-6">
+
+    <div class="mag-eg-el-wrap img-thumbnail">
+				
+      <div class="proportion">
+					<div id="mapps" onmouseup="send_coord(event)" onmousemove="cnvs_getCoordinates(event)" onmouseout="cnvs_clearCoordinates()">
+        <div mag-thumb="outer" class="mag-eg-el"> 
+          <!-- <img src="{{ url_for('video_feed') }}" /> --> 
+          <img id="mapimg" src="https://oscimg.oschina.net/oscnet/e2cef0a5d1da4b97819b7165d9638e462d2.jpg" onerror='this.src="https://oscimg.oschina.net/oscnet/e2cef0a5d1da4b97819b7165d9638e462d2.jpg"'/> </div>
+				<div class="filler"></div>
+				
+      </div>
+    </div>
+	</div>
+</div>
+	
+  <button class="myBTN" id="btn_s" style="position:absolute;left:630px;top:300px;">连接</button>
+  <input type="text" id="videoS" style="position:absolute;left:740px;top:300px;height:50px;width: 16em;color: rgb(10, 10, 10);" name="videoURL" value="http://192.168.88.101:8081/video">
+  <div class="mag-eg-el-wrap img-thumbnail" style="position:absolute;left:630px;top:360px;height:auto;width:auto">
+    <div style="height: 200px; width: 373px;">
+      <button class="cBTN" id="btn_LL" onmousedown="dirBtnDown('L')" onmouseup="dirBtnUp()" >左移</button>
+      <button class="cBTN" id="btn_F" onmousedown="dirBtnDown('F')" onmouseup="dirBtnUp()">前进</button>
+      <button class="cBTN" id="btn_RR" onmousedown="dirBtnDown('R')" onmouseup="dirBtnUp()">右移</button>
+      <button class="cBTN" id="btn_L" onmousedown="dirBtnDown('Q')" onmouseup="dirBtnUp()" >左转</button>
+      <button class="cBTN" id="btn_B" onmousedown="dirBtnDown('B')" onmouseup="dirBtnUp()" >后退</button>
+      <button class="cBTN" id="btn_R" onmousedown="dirBtnDown('E')" onmouseup="dirBtnUp()" >右转</button>
+      <br>
+      <input type="checkbox" id="autos" checked="checked" value="1"><label class="checkBox">自动寻路</label>
+      <input type="checkbox" id="routine" value="2"><label class="checkBox">往返运输</label>
+      <input type="checkbox" id="lidar" checked="checked" value="3"><label class="checkBox">雷达显示</label>
+    </div>
+  </div>
+  <div class="mag-eg-el-wrap img-thumbnail" style="position:absolute;left:630px;top:0px;height:auto;width:auto">
+    <div style="height: 280px; width: 373px;overflow:hidden;"> 
+    <img id="video" src="https://oscimg.oschina.net/oscnet/7c9460dfc233bc9d11de3b6b9fe62f76a2d.jpg" 
+    style="height: 280px; width: 373px;" 
+    onerror='this.src="https://oscimg.oschina.net/oscnet/7c9460dfc233bc9d11de3b6b9fe62f76a2d.jpg"'/> 
+	  </div>
+	</div>
+  <script src="{{ url_for('static', filename='js/jquery-1.11.0.min.js')}}" type="text/javascript"></script>
+
+	<script src="{{ url_for('static', filename='js/jquery.bridget.js')}}"></script>
+	
+	<script src="{{ url_for('static', filename='js/jquery.mousewheel.min.js')}}"></script>
+	
+	<script src="{{ url_for('static', filename='js/jquery.event.drag.js')}}"></script>
+	<script src="{{ url_for('static', filename='js/screenfull.js')}}"></script>
+	<script src="{{ url_for('static', filename='js/hammer.min.js')}}"></script>
+	<script src="{{ url_for('static', filename='js/PreventGhostClick.js')}}"></script>
+	
+	<script src="{{ url_for('static', filename='src/js/mag-analytics.js')}}"></script>
+	
+	<script src="{{ url_for('static', filename='src/js/mag.js')}}"></script>
+	<script src="{{ url_for('static', filename='src/js/mag-jquery.js')}}"></script>
+	<script src="{{ url_for('static', filename='src/js/mag-control.js')}}"></script>
+  <script src="{{ url_for('static', filename='js/index.js')}}"></script>
+  
+</div>
+<div id="MAP_COOR" style="position: absolute;top:0px;left:500px"></div>
+  <script type="text/javascript">
+  var key_flag=0;
+var key_list=[['W',87,"F",0],
+                            ['S',83,"B",0],
+                            ['A',65,"L",0],
+                            ['D',68,"R",0],
+                            ['Q',81,"Q",0],
+                            ['E',69,"E",0],
+                            ['H',17,"H",0]];
+
+                var c=document.getElementById("myCanvas");
+                var ctx=c.getContext("2d");
+                var theImage = new Image(); 
+                
+             // 建立socket连接，等待服务器“推送”数据，用回调函数更新图表
+    
+    var namespace = '/test';
+    var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
+    
+         
+    
+            function cnvs_getCoordinates(e)
+            {
+                // 检测是否支持window.Worker
+                
+                theImage.src = $("#mapimg").attr( "src");
+                var a1=$("#mapps").width()/theImage.width;
+                var a2 = $("#mapps").height()/theImage.height;
+            x=Math.floor(e.clientX-$("#mapps").offset().left);
+            y=Math.floor(e.clientY-$("#mapps").offset().top);
+
+            x=Math.floor(x/a1);
+            y=Math.floor(y/a2);
+            document.getElementById("xycoordinates").innerHTML="(" + x + "," + y + ")";
+            document.getElementById("cross").style.visibility="visible";
+            }
+            
+            function cnvs_clearCoordinates()
+            {
+                document.getElementById("cross").style.visibility="hidden";
+            document.getElementById("xycoordinates").innerHTML="";
+            }
+        function draw()
+            {
+                
+                //cts.globalCompositeOperation="source-over";
+                ctx.strokeStyle="#fdc274";
+                ctx.beginPath();
+                ctx.moveTo(140,0);
+                ctx.lineTo(140,280);						
+                ctx.stroke();
+                ctx.moveTo(0,140);
+                ctx.lineTo(280,140);
+                ctx.stroke();
+            };
+      
+    function send_coord(e)
+    {
+      if($('#autos').prop('checked'))
+      {
+            theImage.src = $("#mapimg").attr( "src");
+                var a1=$("#mapps").width()/theImage.width;
+                var a2 = $("#mapps").height()/theImage.height;
+            x=Math.floor(e.clientX-$("#mapps").offset().left);
+            y=Math.floor(e.clientY-$("#mapps").offset().top);
+
+            x=Math.floor(x/a1);
+            y=Math.floor(y/a2);
+            var url = location.protocol + '//' + document.domain + ':' + location.port
+            var request = new XMLHttpRequest();
+            
+            request.open("POST", url);
+            if($('#routine').prop('checked')){
+              request.send("CS"+"(" + x + "," + y + ")");
+            }else{
+              request.send("C"+"(" + x + "," + y + ")");
+            }
+          }
+    }
+    function dirBtnDown(direction) {
+                var url = location.protocol + '//' + document.domain + ':' + location.port
+                var request = new XMLHttpRequest();
+                
+                if(direction=="F")	{$("#btn_F").css({'background-color':'red'});};
+                if(direction=="B")	{$("#btn_B").css({'background-color':'red'});};
+                if(direction=="L")	{$("#btn_LL").css({'background-color':'red'});};
+                if(direction=="R")	{$("#btn_RR").css({'background-color':'red'});};
+                if(direction=="Q")	{$("#btn_L").css({'background-color':'red'});};
+                if(direction=="E")	{$("#btn_R").css({'background-color':'red'});};
+                
+                request.open("POST", url);
+                request.send(direction);
+                
+        }
+ 
+        function dirBtnUp() {
+                var url = location.protocol + '//' + document.domain + ':' + location.port
+                var request = new XMLHttpRequest();
+                $(".cBTN").css({'background-color':'rgb(124, 124, 124)'});
+                request.open("POST", url);
+                request.send("S");
+        }
+
+
+function get_video(url){
+var request = new XMLHttpRequest();
+request.open("POST", url)
+}
+
+$(document).ready(function() {
+document.getElementById("cross").style.visibility="hidden";
+urlss="{{ url_for('video_feed') }} ";
+$('#mapimg').attr('src', urlss);
+$('#mapimg2').attr('src', urlss); 
+socket.on('server_response', function(res) {
+      update_mychart(res);
+    });
+$('#btn_s').click(function() {
+//$("#stock").load($('#videoS').value)
+urls=$("#videoS").val();
+console.log("111")
+get_video(urls);
+//释放按键时
+
+    $('#video').attr('src', urls); 
+      
+});
+$('#lidar').change(function(){
+  if(this.prop('checked')){
+    dirBtnDown("P")
+  }else{
+    dirBtnDown("O")
+  }
+});
+$(document).keyup(function(event){
+var code=event.keyCode,i,flag=0;
+    for(i=0;i<7;i+=1)
+    {
+        if(key_list[i][1]==code)
+        {
+            key_list[i][3]=0;
+            
+            flag=1;
+        };
+    };
+
+    if(flag==1)
+    {dirBtnUp();};
+});
+//按下按键时
+$(document).keydown(function(event){
+    var code=event.keyCode,i,flag=0;
+
+    for(i=0;i<7;i+=1)
+    {
+        if(key_list[i][1]==code && key_list[i][3]==0 )
+        {
+            //alert("aaa")
+            key_list[i][3]=1;
+            dirBtnDown(key_list[i][2]);
+            break;
+        };
+    };
+});
+draw();
+
+
+
+
+});
+  </script>
+
+<script>
+    Highcharts.setOptions({
+      global: {
+        useUTC: false
+      }
+    });
+    
+
+    
+    
+    console.log('get!');
+      var chart = Highcharts.chart('containerX', {
+        chart: {
+        type: 'scatter',
+      
+        polar: true,
+        
+        events: {
+          load: function () {
+            var series = this.series[0],
+                    chart = this;
+          }
+        }
+      },xAxis: {
+        tickInterval: 45,
+        min: 0,
+        max: 360,
+        labels: {
+          formatter: function () {
+            return this.value + '°';
+          }
+        }
+      },
+      title: {
+        text: '激光雷达数据'
+      },
+      yAxis: {
+        min: 0,
+        tickInterval: 2,
+        max :4
+      },
+      plotOptions: {
+        series: {
+          pointStart: 0,
+          pointInterval: 45
+        },
+        column: {
+          pointPadding: 0,
+          groupPadding: 0
+        }
+      },
+      legend: {
+        enabled: false
+      },series: [{
+        name: 'node',
+        marker: { 
+          radius: 1.5, 
+        },
+        color: 'rgba(223, 83, 83, .5)',
+        
+        data: (function () {
+          // 生成随机值
+          var data = [],
+            i;
+          for (i = 0; i <= 360; i += 1) {
+            data.push({
+              x: i,
+              y: 0
+            });
+          }
+          return data;
+        }())
+      }]
+    });	
+          
+          var data = [],
+          i;
+    //准备好统一的 callback 函数
+    var update_mychart = function (res) { //res是json格式的response对象
+          
+          for (i = 0; i <= 720; i += 1) {
+            data[i]={
+              x: parseFloat(i)*0.5+180.0,
+              y: parseFloat(res.data[720-i])
+            };
+          };
+          
+    
+        chart.series[0].setData(data,true,false,false);
+            //updatechart();
+        // x=res.pos[0];
+        // y=res.pos[1];
+        // document.getElementById("MAP_COOR").innerHTML="(" + x + "," + y + ")";                
+        };
+</script>
+
+
+</body>
+
+
+<p id="copyright">©2018-2020 DoppioBrique. All Rights Reserved. Welcome to join my technical discussion QQ group:700741375 or pay attention to my bilibili account:砖砖哟</p>
+</html>
