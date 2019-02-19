@@ -94,7 +94,7 @@ python RobotRunning.py
 
 <p><h3>Introduction</h3>
 
-This is an SLAM program for an automatic cargo robot. It does not use the ROS system. It is built from the driver to the algorithm to the front end and the back end. The CoreSLAM algorithm is ported to [BreezySLAM] (https://github). .com/simondlevy/BreezySLAM), which contains no laser radar test program, the robot physical demonstration can refer to bilibili video[【毕业设计/移动机器人】当你想喝可乐又懒得去拿时...](https://www.bilibili.com/video/av43326289/)
+This is an SLAM program for an automatic cargo robot. It does not use the ROS system. It is built from the driver to the algorithm to the front end and the back end. The CoreSLAM algorithm is ported to [BreezySLAM](https://github.com/simondlevy/BreezySLAM), which contains no laser radar test program, the robot physical demonstration can refer to bilibili video[【毕业设计/移动机器人】当你想喝可乐又懒得去拿时...](https://www.bilibili.com/video/av43326289/)
 <p>
 
 <p><h3>Install</h3>
